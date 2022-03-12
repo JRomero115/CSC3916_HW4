@@ -62,8 +62,8 @@ router.post('/signup', function(req, res) {
                     return res.json(err);
             }
 
-            res.json({success: true, msg: 'Successfully created new user.'})
         });
+        res.json({success: true, msg: 'Successfully created new user.'})
     }
 });
 
