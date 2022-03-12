@@ -54,6 +54,8 @@ router.post('/signup', function(req, res) {
         user.username = req.body.username;
         user.password = req.body.password;
 
+        db.save(user);
+
         user.save(function(err){
             if (err) {
                 if (err.code == 11000)
