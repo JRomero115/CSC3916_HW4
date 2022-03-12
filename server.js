@@ -54,7 +54,7 @@ router.post('/signup', function(req, res) {
 
         //res.json({username: user.username, password: user.password})
 
-        user.pre('save', function(err){
+        db.pre('save', function(err){
             if (err) {
                 if (err.code == '11000') {
                     res.json({success: false, message: 'A user with that username already exists.'});
