@@ -52,6 +52,8 @@ router.post('/signup', function(req, res) {
         user.username = req.body.username;
         user.password = req.body.username;
 
+        res.json({username: user.username, password: user.password})
+
         user.save(function(err){
             if (err) {
                 if (err.code == 11000)
@@ -62,7 +64,6 @@ router.post('/signup', function(req, res) {
 
             res.json({success: true, msg: 'Successfully created new user.'})
         });
-        //res.json({name: user.name, username: user.username})
         /*
         user.save(function(err){
             if (err) {
