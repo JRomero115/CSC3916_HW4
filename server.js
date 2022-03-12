@@ -45,14 +45,14 @@ function getJSONObjectForMovieRequirement(req) {
 // Sign-up
 router.post('/signup', function(req, res) {
     if (!req.body.username || !req.body.password) {
-        res.json({success: false, msg: 'Please include both username and password to signup.'})
+        res.json({success: false, msg: 'Please. include both username and password to signup.'})
     } else {
         var user = new User();
         user.name = req.body.name;
         user.username = req.body.username;
         user.password = req.body.username;
 
-        db.save(function(err){
+        user.db.save(function(err){
             if (err) {
                 if (err.code == 11000)
                     return res.json({ success: false, message: 'A user with that username already exists.'});
