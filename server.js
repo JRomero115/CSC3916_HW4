@@ -63,6 +63,23 @@ router.post('/signup', function(req, res) {
     }
 });
 
+// Return errors for other methods
+router.get('/signup', function (req, res) {
+    res.status(401).send({success: false, msg: 'Does not support the HTTP method.'});
+});
+
+router.put('/signup', function (req, res) {
+    res.status(401).send({success: false, msg: 'Does not support the HTTP method.'});
+});
+
+router.delete('/signup', function (req, res) {
+    res.status(401).send({success: false, msg: 'Does not support the HTTP method.'});
+});
+
+router.patch('/signup', function (req, res) {
+    res.status(401).send({success: false, msg: 'Does not support the HTTP method.'});
+});
+
 // Sign-in
 router.post('/signin', function (req, res) {
     var userNew = new User();
@@ -85,6 +102,72 @@ router.post('/signin', function (req, res) {
             }
         })
     })
+});
+
+// Return errors for other methods
+router.get('/signin', function (req, res) {
+    res.status(401).send({success: false, msg: 'Does not support the HTTP method.'});
+});
+
+router.put('/signin', function (req, res) {
+    res.status(401).send({success: false, msg: 'Does not support the HTTP method.'});
+});
+
+router.delete('/signin', function (req, res) {
+    res.status(401).send({success: false, msg: 'Does not support the HTTP method.'});
+});
+
+router.patch('/signin', function (req, res) {
+    res.status(401).send({success: false, msg: 'Does not support the HTTP method.'});
+});
+
+// Movies
+router.route('/movies')
+    .get(function (req, res) {
+            console.log(req.body);
+            res = res.status(200);
+            if(req.get('Content-Type')){
+                console.log("Content-Type: " + req.get('Content-Type'));
+                res = res.type(req.get('Content-Type'));
+            }
+            var o = getJSONObjectForMovieRequirement(req);
+            res.status(200).send({status: 200, msg: 'GET movies', headers: o.headers, query: req.query, env: o.key});
+        }
+    )
+    .post(function (req, res) {
+            console.log(req.body);
+            res = res.status(200);
+            if (req.get('Content-Type')) {
+                console.log("Content-Type: " + req.get('Content-Type'));
+                res = res.type(req.get('Content-Type'));
+            }
+            var o = getJSONObjectForMovieRequirement(req);
+            res.status(200).send({status: 200, msg: 'movie saved', headers: o.headers, query: req.query, env: o.key});
+        }
+    )
+    .put(authController.isAuthenticated, function(req, res) {
+            console.log(req.body);
+            res = res.status(200);
+            if (req.get('Content-Type')) {
+                res = res.type(req.get('Content-Type'));
+            }
+            var o = getJSONObjectForMovieRequirement(req);
+            res.status(200).send({status: 200, msg: 'movie updated', headers: o.headers, query: req.query, env: o.key});
+        }
+    );
+
+router.delete('/movies', function (req, res) {
+    console.log(req.body);
+    res = res.status(200);
+    if (req.get('Content-Type')) {
+        res = res.type(req.get('Content-Type'));
+    }
+    var o = getJSONObjectForMovieRequirement(req);
+    res.status(200).send({status: 200, msg: 'movie deleted', headers: o.headers, query: req.query, env: o.key});
+});
+
+router.patch('/movies', function (req, res) {
+    res.status(401).send({success: false, msg: 'Does not support the HTTP method.'});
 });
 
 app.use('/', router);
