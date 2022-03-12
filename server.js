@@ -48,7 +48,12 @@ router.post('/signup', function(req, res) {
     if (!req.body.username || !req.body.password) {
         res.json({success: false, msg: 'Please include both username and password to signup.'})
     } else {
+        User.create(req.body.name, req.body.username, req.body.password).then(function(user){
+            res.send(user);
+        });
+        /*
         var user = new User();
+        user.save();
         user.name = req.body.name;
         user.username = req.body.username;
         user.password = req.body.password;
@@ -68,6 +73,8 @@ router.post('/signup', function(req, res) {
                 }
             })
         })
+
+         */
     }
 });
 
