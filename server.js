@@ -4,8 +4,7 @@ File: Server.js
 Description: Web API scaffolding for Movie API
  */
 
-let envPath = __dirname + "/../.env"
-require('dotenv').config({path:envPath});
+require('dotenv').config();
 var express = require('express');
 //var http = require('http');
 var bodyParser = require('body-parser');
@@ -16,7 +15,6 @@ db = require('./db')(); //hack
 var jwt = require('jsonwebtoken');
 var cors = require('cors');
 var User = require('./Users');
-var MongoClient = require('mongodb').MongoClient;
 
 var app = express();
 app.use(cors());
@@ -55,16 +53,21 @@ router.post('/signup', function(req, res) {
         user.username = req.body.username;
         user.password = req.body.password;
 
-        db.save(function(err){
+        User.findOne({ username: user.username }).select('name username password').exec(function(err, user) {
             if (err) {
-                if (err.code == 11000)
-                    return res.json({ success: false, message: 'A user with that username already exists.'});
-                else
-                    return res.json(err);
+                res.send(err);
             }
-        });
+            user.save(function(err) {
+                if (err) {
+                    if (err.code == 11000)
+                        return res.json({ success: false, message: 'A user with that username already exists.'});
+                    else
+                        return res.json(err);
+                }
 
-        res.json({success: true, msg: 'Successfully created new user.'})
+                res.json({success: true, msg: 'Successfully created new user.'})
+            })
+        })
     }
 });
 
