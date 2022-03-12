@@ -3,15 +3,16 @@ CSC3916 HW3
 File: Server.js
 Description: Web API scaffolding for Movie API
  */
-require('dotenv').config();
+
 var express = require('express');
+var http = require('http');
 var bodyParser = require('body-parser');
 var passport = require('passport');
 var authController = require('./auth');
 var authJwtController = require('./auth_jwt');
+db = require('./db')(); //hack
 var jwt = require('jsonwebtoken');
 var cors = require('cors');
-var User = require('./Users');
 
 var app = express();
 app.use(cors());
@@ -45,21 +46,13 @@ router.post('/signup', function(req, res) {
     if (!req.body.username || !req.body.password) {
         res.json({success: false, msg: 'Please include both username and password to signup.'})
     } else {
-        var user = new User();
-        user.name = req.body.name;
-        user.username = req.body.username;
-        user.password = req.body.password;
+        var newUser = {
+            username: req.body.username,
+            password: req.body.password
+        };
 
-        user.save(function(err){
-            if (err) {
-                if (err.code == 11000)
-                    return res.json({ success: false, message: 'A user with that username already exists.'});
-                else
-                    return res.json(err);
-            }
-
-            res.json({success: true, msg: 'Successfully created new user.'})
-        });
+        db.save(newUser); //no duplicate checking
+        res.json({success: true, msg: 'Successfully created new user.'})
     }
 });
 
@@ -82,26 +75,20 @@ router.patch('/signup', function (req, res) {
 
 // Sign-in
 router.post('/signin', function (req, res) {
-    var userNew = new User();
-    userNew.username = req.body.username;
-    userNew.password = req.body.password;
+    var user = db.findOne(req.body.username);
 
-    User.findOne({ username: userNew.username }).select('name username password').exec(function(err, user) {
-        if (err) {
-            res.send(err);
+    if (!user) {
+        res.status(401).send({success: false, msg: 'Authentication failed. User not found.'});
+    } else {
+        if (req.body.password == user.password) {
+            var userToken = { id: user.id, username: user.username };
+            var token = jwt.sign(userToken, process.env.SECRET_KEY);
+            res.json({success: true, token: 'JWT ' + token});
         }
-
-        user.comparePassword(userNew.password, function(isMatch) {
-            if (isMatch) {
-                var userToken = { id: user.id, username: user.username };
-                var token = jwt.sign(userToken, process.env.SECRET_KEY);
-                res.json ({success: true, token: 'JWT ' + token});
-            }
-            else {
-                res.status(401).send({success: false, msg: 'Authentication failed.'});
-            }
-        })
-    })
+        else {
+            res.status(401).send({success: false, msg: 'Authentication failed.'});
+        }
+    }
 });
 
 // Return errors for other methods
