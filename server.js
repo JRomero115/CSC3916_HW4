@@ -55,17 +55,6 @@ router.post('/signup', function(req, res) {
         user.username = req.body.username;
         user.password = req.body.password;
 
-        //db.save(user);
-        MongoClient.connect(process.env.DB, function(err, db) {
-            if (err) throw err;
-            var dbo = db.db("webapi");
-            dbo.collection("Users").insertOne(user, function(err, res) {
-                if (err) throw err;
-                console.log("1 document inserted");
-                db.close();
-            });
-        });
-        /*
         db.save(function(err){
             if (err) {
                 if (err.code == 11000)
@@ -76,7 +65,6 @@ router.post('/signup', function(req, res) {
 
         });
 
-         */
         res.json({success: true, msg: 'Successfully created new user.'})
     }
 });
