@@ -5,7 +5,7 @@ Description: Web API scaffolding for Movie API
  */
 require('dotenv').config();
 var express = require('express');
-var http = require('http');
+//var http = require('http');
 var bodyParser = require('body-parser');
 var passport = require('passport');
 var authController = require('./auth');
@@ -52,6 +52,8 @@ router.post('/signup', function(req, res) {
         user.username = req.body.username;
         user.password = req.body.username;
 
+        res.json({name: user.name, username: user.username})
+        /*
         user.save(function(err){
             if (err) {
                 if (err.code == 11000)
@@ -62,6 +64,8 @@ router.post('/signup', function(req, res) {
 
             res.json({success: true, msg: 'Successfully created new user.'})
         });
+
+         */
     }
 });
 
