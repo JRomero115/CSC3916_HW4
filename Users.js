@@ -1,6 +1,7 @@
 let envPath = __dirname + "/../.env"
 require('dotenv').config({path:envPath});
 var mongoose = require('mongoose');
+//var MongoClient = require('mongodb').MongoClient;
 var Schema = mongoose.Schema;
 var bcrypt = require('bcrypt-nodejs');
 
@@ -8,7 +9,7 @@ mongoose.Promise = global.Promise;
 
 //mongoose.connect(process.env.DB, { useNewUrlParser: true });
 try {
-    mongoose.connect( process.env.DB, {useNewUrlParser: true, useUnifiedTopology: true}, () =>
+    mongoose.connect(process.env.DB, {useNewUrlParser: true, useUnifiedTopology: true}, () =>
         console.log("connected"));
 }catch (error) {
     console.log("could not connect");
@@ -20,6 +21,19 @@ var UserSchema = new Schema({
     name: String,
     username: { type: String, required: true, index: { unique: true }},
     password: { type: String, required: true, select: false }
+});
+
+UserSchema.save(function(err){
+    mongoose.connect(process.env.DB, function (err, db) {
+        if (err) throw err;
+        var dbo = db.db("webapi");
+        var user;
+        dbo.collection("Users").insertOne(user, function (err, res) {
+            if (err)
+                throw err;
+            db.close();
+        });
+    });
 });
 
 UserSchema.pre('save', function(next) {
