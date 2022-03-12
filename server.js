@@ -3,7 +3,9 @@ CSC3916 HW3
 File: Server.js
 Description: Web API scaffolding for Movie API
  */
-require('dotenv').config();
+
+let envPath = __dirname + "/../.env"
+require('dotenv').config({path:envPath});
 var express = require('express');
 //var http = require('http');
 var bodyParser = require('body-parser');
@@ -52,20 +54,6 @@ router.post('/signup', function(req, res) {
         user.username = req.body.username;
         user.password = req.body.password;
 
-        //res.json({username: user.username, password: user.password})
-
-        db.pre('save', function(err){
-            if (err) {
-                if (err.code == '11000') {
-                    res.json({success: false, message: 'A user with that username already exists.'});
-                } else {
-                    res.json(err);
-                }
-
-                res.json({success: true, msg: 'Successfully created new user.'})
-            }
-        });
-        /*
         user.save(function(err){
             if (err) {
                 if (err.code == 11000)
@@ -76,8 +64,6 @@ router.post('/signup', function(req, res) {
 
             res.json({success: true, msg: 'Successfully created new user.'})
         });
-
-         */
     }
 });
 
