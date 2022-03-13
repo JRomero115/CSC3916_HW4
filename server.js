@@ -144,12 +144,12 @@ router.post('/movies', function(req, res) {
         movie.genre = req.body.genre;
         movie.actors = req.body.actors
 
-        Movie.findOne({ title: movie.title, year: movie.year }).select('title year').exec(function(err, movie) {
+        Movie.findOne({ title: req.body.title, year: req.body.year }).select('title year').exec(function(err, movie) {
             if (err) {
                 res.send(err);
             }
 
-            movie.compareTitle(movie.title, function(isMatch) {
+            movie.compareTitle(req.body.title, function(isMatch) {
                 if (isMatch) {
                     res.json({success: false, msg: 'Movie already exists.'})
                 }
