@@ -182,22 +182,6 @@ router.put('/movies', function(req, res) {
          */
 });
 
-router.delete('/movies', function(req, res) {
-    if (!req.body.title) {
-        res.json({success: false, msg: 'Please enter the movie title to delete.'})
-    } else {
-        var deleteMovie = new Movie();
-        deleteMovie.title = req.body.title;
-        Movie.deleteOne({ title: movie.title }, deleteMovie.title, (err, newMov) => {
-            if(err) {
-                res.json({msg: 'Movie could not be deleted.'})
-            }
-
-            res.json({success: true, msg: 'Successfully deleted the movie.'})
-        });
-    }
-});
-
 
 /*
 router.route('/movies')
