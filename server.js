@@ -157,7 +157,9 @@ router.route('/movies')
                     msg: 'Movie saved.',
                     title: req.title,
                     year: req.year,
-                    genre: req.body.genre});
+                    genre: req.body.genre,
+                    actor1: req.body.actor1,
+                    character1: req.body.char1});
             });
         }
 });
