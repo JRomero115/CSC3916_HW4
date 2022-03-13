@@ -125,6 +125,67 @@ router.patch('/signin', function (req, res) {
 });
 
 // Movies
+router.route('/movies')
+    .get(authJwtController.isAuthenticated, function(req, res){
+        Movie.find(function(err, movie) {
+            if (err) {
+                res.json({msg: 'Movies not found.'})
+            }
+            res.json(movie);
+        });
+    })
+
+    .post(authJwtController.isAuthenticated, function(req, res){
+        var movie = new Movie();
+        movie.title = req.body.title;
+        movie.year = req.body.year;
+        movie.genre = req.body.genre;
+        movie.actors = req.body.actors;
+
+        movie.save(function(err){
+            if (err) {
+                res.json({msg: 'Could not create the movie.'})
+            }
+            res.json({success: true, msg: 'Successfully created a new movie.'})
+        });
+    })
+
+    .put(authJwtController.isAuthenticated, function(req, res) {
+        if (!req.body.title) {
+            res.json({success: false, msg: 'Please delete the movie by entering the title.'})
+        } else {
+            Movie.findOne({title: req.body.title}, function (err, movie) {
+                if (err) {
+                    res.json({msg: 'Could not find the movie.'})
+                } else {
+                    Movie.updateOne({title: req.body.title}, req.body.modify)
+                        .then(updateMovie => {
+                            if (!updateMovie) {
+                                return res.status(404).json({msg: "Could not update the movie."});
+                            }
+                            return res.status(200).json({msg: "Successfully updated the movie."});
+                        })
+                        .catch(err => console.log(err))
+                }
+            });
+        }
+    })
+
+    .delete(authJwtController.isAuthenticated, function(req, res) {
+        if (!req.body.title) {
+            res.json({success: false, msg: 'Please delete the movie by entering the title.'})
+        } else {
+            Movie.deleteOne({title: req.body.title}, function (err, movie) {
+                if (err) {
+                    res.json({success: false, msg: 'Movie was not found.'});
+                } else {
+                    res.json({success: true, msg: 'Successfully deleted the movie.'});
+                }
+            });
+        }
+    });
+
+/*
 router.get('/movies', function(req, res) {
     Movie.find(function(err, movie) {
         if (err) {
@@ -212,6 +273,8 @@ router.delete('/movies', function(req, res) {
     }
 });
 
+*/
+
 /*
 router.post('/movies', function(req, res) {
     if (!req.body.title || !req.body.year || !req.body.actors) {
@@ -242,7 +305,7 @@ router.put('/movies', function(req, res) {
         var updateMovie = new Movie();
         updateMovie.title = req.body.title;
 
-    filte
+
         /*
     Movie.findOne({ title: req.body.title }, function(err, newMovie){
         if (err) {
