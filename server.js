@@ -134,6 +134,7 @@ router.get('/movies', function(req, res) {
     });
 });
 
+/*
 router.post('/movies', function(req, res) {
     if (!req.body.title || !req.body.year || !req.body.actors) {
         res.json({success: false, msg: 'Please include a title, year, and at least (1) actor/character name.'})
@@ -153,6 +154,7 @@ router.post('/movies', function(req, res) {
         });
     }
 });
+*/
 
 /*
 router.put('/movies', function(req, res) {
