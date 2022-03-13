@@ -145,33 +145,58 @@ router.post('/movies', function(req, res) {
         movie.actors = req.body.actors;
 
         Movie.find({ title: req.body.title, year: req.body.year }, function(err, movie){
-            if (err) {
+            if (err.code == 11000) {
                 res.json({ success: false, msg: 'That movie already exists.'});
             }
 
             res.json({success: true, msg: 'Successfully created a new movie.'})
         });
     }
-        /*
-        Movie.find({ title: movie.title } {
-            if (err) {
-                res.send(err);
-            }
-
-            movie.compareTitle(movie.title, function(isMatch) {
-                if (isMatch) {
-                    res.json({ success: false, msg: 'That movie already exists.'});
-                }
-                else {
-                    res.status(200).send({success: true, msg: 'Successfully created a new movie.'});
-                }
-            })
-        })
-        */
 });
 
+router.put('/movies', function(req, res) {
+    if (!req.body.title) {
+        res.json({success: false, msg: 'Please update the movie title.'})
+    } else {
+        var updateMovie = new Movie();
+        updateMovie.title = req.body.title;
+        Movie.updateOne({ title: movie.title }, updateMovie.title, { new: true }, (err, newMov) => {
+            if(err) {
+                res.json({msg: 'Movie could not be updated.'})
+            }
 
+            res.json({success: true, msg: 'Successfully updated the movie.'})
+        });
+    }
 
+        /*
+    Movie.findOne({ title: req.body.title }, function(err, newMovie){
+        if (err) {
+            res.json(err);
+        } else {
+            Movie.updateOne("title": {}, {$set: movie}, function(err, newMovie))
+        }
+
+        res.json({success: true, msg: 'Successfully created a new movie.'})
+    });
+         */
+});
+
+router.delete('/movies', function(req, res) {
+    if (!req.body.title) {
+        res.json({success: false, msg: 'Please enter the movie title to delete.'})
+    } else {
+        var deleteMovie = new Movie();
+        deleteMovie.title = req.body.title;
+        Movie.deleteOne({ title: movie.title }, deleteMovie.title, (err, newMov) => {
+            if(err) {
+                res.json({msg: 'Movie could not be deleted.'})
+            }
+
+            res.json({success: true, msg: 'Successfully deleted the movie.'})
+        });
+    }
+});
 
 
 /*

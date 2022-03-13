@@ -30,6 +30,11 @@ var MovieSchema = new Schema({
 });
 
 MovieSchema.pre('save', function(next) {
+    this.getFilter();
+    this.getUpdate();
+});
+
+MovieSchema.pre('findOneAndUpdate', function middleware() {
     var movie = this;
 
     //hash the password
@@ -43,7 +48,6 @@ MovieSchema.pre('save', function(next) {
     });
     next();
 });
-
 
 MovieSchema.methods.compareTitle = function (title, callback) {
     var movie = this;
