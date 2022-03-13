@@ -144,25 +144,25 @@ router.post('/movies', function(req, res) {
         movie.genre = req.body.genre;
         movie.actors = req.body.actors
 
-        movie.save(function(err){
+        Movie.findOne({ title: movie.title, year: movie.year }).select('title year').exec(function(err, movie) {
             if (err) {
-                res.json(err);
+                res.send(err);
             }
-            Movie.findOne({ title: movie.title }).select('title year').exec(function(err, movie) {
-                if (err) {
-                    res.send(err);
-                }
 
-                movie.compareTitle(movie.title, function(isMatch) {
-                    if (isMatch) {
-                        res.json({success: false, msg: 'Movie already exists.'})
-                    }
-                    else {
+            movie.compareTitle(movie.title, function(isMatch) {
+                if (isMatch) {
+                    res.json({success: false, msg: 'Movie already exists.'})
+                }
+                else {
+                    movie.save(function(err) {
+                        if (err) {
+                            res.json(err);
+                        }
                         res.json({success: true, msg: 'Successfully created a new movie.'})
-                    }
-                })
+                    });
+                }
             })
-        });
+        })
     }
 });
 
