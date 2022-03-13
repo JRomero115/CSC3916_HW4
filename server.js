@@ -171,12 +171,9 @@ router.put('/movies', function(req, res) {
         res.json({success: false, msg: 'Please update the movie title.'})
     } else {
         var updateMovie = new Movie();
-        updateMovie.title = req.body.title;
-        updateMovie.year = req.body.year;
-        updateMovie.genre = req.body.genre;
-        updateMovie.actors = req.body.actors
+        var updateTitle = { title: req.body.title };
 
-        Movie.updateOne({ title: req.body.title}).select('title').exec(function(err, updateMovie) {
+        Movie.updateOne(updateTitle, {"$set": {"lastModified": true}}, function(err, updateMovie) {
             if (err) {
                 res.send(err);
             }
@@ -197,12 +194,9 @@ router.delete('/movies', function(req, res) {
         res.json({success: false, msg: 'Please delete the movie by entering the title.'})
     } else {
         var deleteMovie = new Movie();
-        deleteMovie.title = req.body.title;
-        deleteMovie.year = req.body.year;
-        deleteMovie.genre = req.body.genre;
-        deleteMovie.actors = req.body.actors
+        var deleteTitle = req.body.title;
 
-        Movie.deleteOne({ title: req.body.title}).select('title').exec(function(err, deleteMovie) {
+        Movie.updateOne(deleteTitle, function(err, deleteMovie) {
             if (err) {
                 res.send(err);
             }
