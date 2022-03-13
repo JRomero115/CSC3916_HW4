@@ -144,12 +144,9 @@ router.post('/movies', function(req, res) {
         movie.genre = req.body.genre;
         movie.actors = req.body.actors;
 
-        Movie.find({ title: movie.title, year: movie.year }, function(err, movie){
+        Movie.find({ title: req.body.title, year: req.body.year }, function(err, movie){
             if (err) {
-                if (err.code == 11000)
-                    return res.json({ success: false, msg: 'The movie already exists.'});
-                else
-                    return res.json(err);
+                res.json({ success: false, msg: 'That movie already exists.'});
             }
 
             res.json({success: true, msg: 'Successfully created a new movie.'})
@@ -281,11 +278,12 @@ router.delete('/movies', function (req, res) {
         env: o.key});
 });
 
+
+ */
 router.patch('/movies', function (req, res) {
     res.status(401).send({success: false, msg: 'Does not support the HTTP method.'});
 });
 
- */
 
 app.use('/', router);
 app.listen(process.env.PORT || 8080);
