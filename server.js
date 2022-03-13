@@ -161,15 +161,8 @@ router.put('/movies', function(req, res) {
     } else {
         var updateMovie = new Movie();
         updateMovie.title = req.body.title;
-        Movie.updateOne({ title: movie.title }, updateMovie.title, { new: true }, (err, newMov) => {
-            if(err) {
-                res.json({msg: 'Movie could not be updated.'})
-            }
 
-            res.json({success: true, msg: 'Successfully updated the movie.'})
-        });
-    }
-
+    filte
         /*
     Movie.findOne({ title: req.body.title }, function(err, newMovie){
         if (err) {
@@ -182,8 +175,9 @@ router.put('/movies', function(req, res) {
     });
 
 });
-
 */
+
+
 
 /*
 router.route('/movies')
