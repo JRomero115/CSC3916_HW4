@@ -127,8 +127,8 @@ router.patch('/signin', function (req, res) {
 // Movies
 router.get('/movies', function(req, res) {
     Movie.find(function(err, movie) {
-        if(err) {
-            res.json({msg: 'Movie not found.'})
+        if (err) {
+            res.json({msg: 'Movies not found.'})
         }
         res.json(movie);
     });
@@ -144,13 +144,12 @@ router.post('/movies', function(req, res) {
         movie.genre = req.body.genre;
         movie.actors = req.body.actors;
 
-        movie.save(function(err){
-            Movie.find({ title: movie.title }, function (err, movie) {
-                if(err) {
-                    res.json({msg: 'That movie already exists.'})
-                }
-                res.json({success: true, msg: 'Successfully created a new movie.'})
-             });
+        Movie.find({ title: movie.title, year: movie.year }, function(err, movie) {
+            if (err) {
+                res.send(err);
+            } else {
+                res.status(200).send({success: true, msg: 'Successfully created a new movie.'});
+            }
         });
         /*
         Movie.find({ title: movie.title } {
