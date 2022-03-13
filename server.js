@@ -146,13 +146,22 @@ router.post('/movies', function(req, res) {
 
         movie.save(function(err){
             if (err) {
-                if (err.code == 11000)
-                    return res.json({ success: false, msg: 'The movie already exists.'});
-                else
-                    return res.json(err);
+                res.json(err);
             }
+            Movie.findOne({ title: movie.title }).select('title year').exec(function(err, movie) {
+                if (err) {
+                    res.send(err);
+                }
 
-            res.json({success: true, msg: 'Successfully created a new movie.'})
+                movie.compareTitle(movie.title, function(isMatch) {
+                    if (isMatch) {
+                        res.json({success: false, msg: 'Movie already exists.'})
+                    }
+                    else {
+                        res.json({success: true, msg: 'Successfully created a new movie.'})
+                    }
+                })
+            })
         });
     }
 });
