@@ -128,7 +128,7 @@ router.patch('/signin', function (req, res) {
 router.get('/movies', function(req, res) {
     Movie.find(function(err, movie) {
         if(err)
-            res.json({msg: "Movie not found."})
+            res.json({msg: 'Movie not found.'})
         res.json(movie);
     });
 });
@@ -142,7 +142,7 @@ router.post('/movies', function(req, res) {
         movie.year = req.body.year;
         movie.genre = req.body.genre;
         movie.actors = req.body.actors;
-
+        /*
         movie.save(function(err){
             if (err) {
                 if (err.code == 11000)
@@ -153,6 +153,22 @@ router.post('/movies', function(req, res) {
 
             res.json({success: true, msg: 'Successfully created a new movie.'})
         });
+        */
+
+        Movie.findOne({ title: movie.title }).select('title year genre').exec(function(err, movie) {
+            if (err) {
+                res.send(err);
+            }
+
+            movie.compareTitle(movie.title, function(isMatch) {
+                if (isMatch) {
+                    res.json({ success: false, msg: 'That movie already exists.'});
+                }
+                else {
+                    res.status(200).send({success: true, msg: 'Successfully created a new movie.'});
+                }
+            })
+        })
     }
 });
 

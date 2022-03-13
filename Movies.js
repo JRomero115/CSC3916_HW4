@@ -39,7 +39,7 @@ MovieSchema.pre('save', function(next) {
 });
 
 
-MovieSchema.methods.comparePassword = function (title, callback) {
+MovieSchema.methods.compareTitle = function (title, callback) {
     var movie = this;
 
     bcrypt.compare(title, movie.title, function(err, isMatch) {
