@@ -153,14 +153,6 @@ router.post('/movies', function(req, res) {
             }
 
             res.json({success: true, msg: 'Successfully created a new movie.'})
-
-            res.status(200).send({
-                status: 200,
-                msg: 'Movie saved.',
-                title: req.title,
-                year: req.year,
-                genre: req.body.genre,
-                actors: req.body.actors});
         });
     }
 });
