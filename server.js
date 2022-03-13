@@ -126,7 +126,7 @@ router.patch('/signin', function (req, res) {
 
 // Movies
 router.route('/movies')
-    .get(function(req, res){
+    .get(function(req, res) {
         Movie.find(function(err, movie) {
             if (err) {
                 res.json({msg: 'Movies not found.'})
@@ -135,37 +135,53 @@ router.route('/movies')
         });
     })
 
-    .post(function(req, res){
-        var movie = new Movie();
-        movie.title = req.body.title;
-        movie.year = req.body.year;
-        movie.genre = req.body.genre;
-        movie.actors = req.body.actors;
+    .post(function(req, res) {
+        if (!req.body.title || !req.body.year || !req.body.actors) {
+            res.json({success: false, msg: 'Please include a title, year, and at least (1) actor/character name.'})
+        } else {
+            var movie = new Movie();
+            movie.title = req.body.title;
+            movie.year = req.body.year;
+            movie.genre = req.body.genre;
+            movie.actors = req.body.actors
 
-        movie.save(function(err){
-            if (err) {
-                res.json({msg: 'Could not create the movie.'})
-            }
-            res.json({success: true, msg: 'Successfully created a new movie.'})
-        });
+            Movie.findOne({ title: req.body.title}).select('title year').exec(function(err, movie) {
+                if (err) {
+                    res.send(err);
+                }
+
+                movie.compareTitle(req.body.title, function(isMatch) {
+                    if (isMatch) {
+                        res.json({success: false, msg: 'Movie already exists.'})
+                    }
+                    else {
+                        movie.save(function(err) {
+                            if (err) {
+                                res.json(err);
+                            }
+                            res.json({success: true, msg: 'Successfully created a new movie.'})
+                        });
+                    }
+                })
+            })
+        }
     })
 
     .put(function(req, res) {
         if (!req.body.title) {
-            res.json({success: false, msg: 'Please delete the movie by entering the title.'})
+            res.json({success: false, msg: 'Please update the movie by entering the title.'})
         } else {
             Movie.findOne({title: req.body.title}, function (err, movie) {
                 if (err) {
-                    res.json({msg: 'Could not find the movie.'})
+                    res.json({success: false, msg: 'Movie was not found.'})
                 } else {
-                    Movie.updateOne({title: req.body.title}, req.body.modify)
-                        .then(updateMovie => {
-                            if (!updateMovie) {
-                                return res.status(404).json({msg: "Could not update the movie."});
-                            }
-                            return res.status(200).json({msg: "Successfully updated the movie."});
-                        })
-                        .catch(err => console.log(err))
+                    Movie.updateOne({title: req.body.title}, function (err, movie) {
+                        if (err) {
+                            res.json({success: false, msg: 'Could not update movie.'});
+                        } else {
+                            res.json({success: true, msg: 'Successfully updated the movie.'});
+                        }
+                    });
                 }
             });
         }
