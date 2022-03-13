@@ -127,56 +127,38 @@ router.patch('/signin', function (req, res) {
 // Movies
 router.route('/movies')
     .post(function (req, res) {
-    if (!req.body.title || !req.body.year || !req.body.actor1 || !req.body.char1) {
-        res.json({success: false, msg: 'Please include the title, year, (1) actor and their character name.'})
-    } else {
-        var movie = new Movie();
-        movie.title = req.body.title;
-        movie.year = req.body.year;
-        movie.genre = req.body.genre;
-        movie.actors = [
-            movie.actor1 = req.body.actor1,
-            movie.char1 = req.body.char1,
-            movie.actor2 = req.body.actor2,
-            movie.char2 = req.body.char2,
-            movie.actor3 = req.body.actor3,
-            movie.char3 = req.body.char3
-        ]
+        if (!req.body.title || !req.body.year || !req.body.actor1 || !req.body.char1) {
+            res.json({success: false, msg: 'Please include the title, year, (1) actor and their character name.'})
+        } else {
+            var movie = new Movie();
+            movie.title = req.body.title;
+            movie.year = req.body.year;
+            movie.genre = req.body.genre;
 
 
-        movie.save(function(err){
-            if (err) {
-                if (err.code == 11000)
-                    return res.json({ success: false, msg: 'That movie already exists.'});
-                else
-                    return res.json(err);
-            }
+            movie.save(function(err){
+                if (err) {
+                    if (err.code == 11000)
+                        return res.json({ success: false, msg: 'That movie already exists.'});
+                    else
+                        return res.json(err);
+                }
 
-            console.log(req.body);
-            res = res.status(200);
-            if(req.get('Content-Type')){
-                console.log("Content-Type: " + req.get('Content-Type'));
-                res = res.type(req.get('Content-Type'));
-            }
+                console.log(req.body);
+                res = res.status(200);
+                if(req.get('Content-Type')){
+                    console.log("Content-Type: " + req.get('Content-Type'));
+                    res = res.type(req.get('Content-Type'));
+                }
 
-            res.status(200).send({
-                status: 200,
-                msg: 'Movie saved.',
-                title: movie.title,
-                year: movie.year,
-                genre: req.body.genre,
-                actors: [
-                    {
-                        actor1: req.body.actor1,
-                        character1: req.body.char1,
-                        actor2: req.body.actor2,
-                        character2: req.body.char2,
-                        actor3: req.body.actor3,
-                        character3: req.body.char3
-                    },
-                ] });
-        });
-    }
+                res.status(200).send({
+                    status: 200,
+                    msg: 'Movie saved.',
+                    title: req.title,
+                    year: req.year,
+                    genre: req.body.genre});
+            });
+        }
 });
 
 
