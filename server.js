@@ -134,6 +134,29 @@ router.get('/movies', function(req, res) {
     });
 });
 
+router.post('/movies', function(req, res) {
+    if (!req.body.title || !req.body.year || !req.body.actors) {
+        res.json({success: false, msg: 'Please include a title, year, and at least (1) actor/character name.'})
+    } else {
+        var movie = new Movie();
+        movie.title = req.body.title;
+        movie.year = req.body.year;
+        movie.genre = req.body.genre;
+        movie.actors = req.body.actors
+
+        movie.save(function(err){
+            if (err) {
+                if (err.code == 11000)
+                    return res.json({ success: false, msg: 'The movie already exists.'});
+                else
+                    return res.json(err);
+            }
+
+            res.json({success: true, msg: 'Successfully created a new movie.'})
+        });
+    }
+});
+
 /*
 router.post('/movies', function(req, res) {
     if (!req.body.title || !req.body.year || !req.body.actors) {
