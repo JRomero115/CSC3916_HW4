@@ -36,7 +36,7 @@ MovieSchema.pre('save', function(next) {
     if (!movie.isModified('title'))
         return next();
 
-    bcrypt.hash(movie.password, null, null, function(err, hash) {
+    bcrypt.hash(movie.title, null, null, function(err, hash) {
         if (err)
             return next(err);
 
