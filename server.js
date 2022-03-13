@@ -145,24 +145,18 @@ router.route('/movies')
             movie.genre = req.body.genre;
             movie.actors = req.body.actors
 
-            Movie.findOne({ title: req.body.title}).select('title year').exec(function(err, movie) {
-                if (err) {
-                    res.send(err);
+            movie.compareTitle(req.body.title, function(isMatch) {
+                if (isMatch) {
+                    res.json({success: false, msg: 'Movie already exists.'})
                 }
-
-                movie.compareTitle(req.body.title, function(isMatch) {
-                    if (isMatch) {
-                        res.json({success: false, msg: 'Movie already exists.'})
-                    }
-                    else {
-                        movie.save(function(err) {
-                            if (err) {
-                                res.json(err);
-                            }
-                            res.json({success: true, msg: 'Successfully created a new movie.'})
-                        });
-                    }
-                })
+                else {
+                    movie.save(function(err) {
+                        if (err) {
+                            res.json(err);
+                        }
+                        res.json({success: true, msg: 'Successfully created a new movie.'})
+                    });
+                }
             })
         }
     })
@@ -171,17 +165,11 @@ router.route('/movies')
         if (!req.body.title) {
             res.json({success: false, msg: 'Please update the movie by entering the title.'})
         } else {
-            Movie.findOne({title: req.body.title}, function (err, movie) {
+            Movie.updateOne({title: req.body.title}, function (err, movie) {
                 if (err) {
                     res.json({success: false, msg: 'Movie was not found.'})
                 } else {
-                    Movie.updateOne({title: req.body.title}, function (err, movie) {
-                        if (err) {
-                            res.json({success: false, msg: 'Could not update movie.'});
-                        } else {
-                            res.json({success: true, msg: 'Successfully updated the movie.'});
-                        }
-                    });
+                    res.json({success: true, msg: 'Successfully updated the movie.'});
                 }
             });
         }
