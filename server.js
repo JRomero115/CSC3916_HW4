@@ -53,36 +53,16 @@ router.post('/signup', function(req, res) {
         user.username = req.body.username;
         user.password = req.body.password;
 
-        res.send({name: req.body.name, username: req.body.username});
-        /*
-        User.create(req.body.name, req.body.username, req.body.password).then(function(user){
-            res.send(user);
-        });
-
-         */
-        /*
-        var user = new User();
-        user.name = req.body.name;
-        user.username = req.body.username;
-        user.password = req.body.password;
-
-        User.findOne({ username: user.username }).select('name username password').exec(function(err, user) {
+        user.save(function(err){
             if (err) {
-                res.send(err);
+                if (err.code == 11000)
+                    return res.json({ success: false, message: 'A user with that username already exists.'});
+                else
+                    return res.json(err);
             }
-            user.save(function(err) {
-                if (err) {
-                    if (err.code == 11000)
-                        return res.json({ success: false, message: 'A user with that username already exists.'});
-                    else
-                        return res.json(err);
-                } else {
-                    res.json({success: true, msg: 'Successfully created new user.'})
-                }
-            })
-        })
 
-         */
+            res.json({success: true, msg: 'Successfully created new user.'})
+        });
     }
 });
 
