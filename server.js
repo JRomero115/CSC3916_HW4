@@ -144,7 +144,7 @@ router.post('/movies', function(req, res) {
         movie.genre = req.body.genre;
         movie.actors = req.body.actors;
 
-        Movie.find({ title: req.body.title, year: req.body.year }, function(err, movie){
+        Movie.findOne({ title: req.body.title, year: req.body.year }, function(err, movie){
             if (err.code == 11000) {
                 res.json({ success: false, msg: 'That movie already exists.'});
             }
