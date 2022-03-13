@@ -136,7 +136,7 @@ router.get('/movies', function(req, res) {
 
 router.post('/movies', function(req, res) {
     if (!req.body.title || !req.body.year || !req.body.actors) {
-        res.json({success: false, msg: 'Please include title, year, and at least (1) actor/character.'})
+        res.json({success: false, msg: 'Please include a title, year, and at least (1) actor/character name.'})
     } else {
         var movie = new Movie();
         movie.title = req.body.title;
@@ -144,13 +144,17 @@ router.post('/movies', function(req, res) {
         movie.genre = req.body.genre;
         movie.actors = req.body.actors;
 
-        Movie.find({ title: movie.title, year: movie.year }, function(err, movie) {
+        movie.save(function(err){
             if (err) {
-                res.send(err);
-            } else {
-                res.status(200).send({success: true, msg: 'Successfully created a new movie.'});
+                if (err.code == 11000)
+                    return res.json({ success: false, msg: 'The movie already exists.'});
+                else
+                    return res.json(err);
             }
+
+            res.json({success: true, msg: 'Successfully created a new movie.'})
         });
+    }
         /*
         Movie.find({ title: movie.title } {
             if (err) {
@@ -167,7 +171,6 @@ router.post('/movies', function(req, res) {
             })
         })
         */
-    }
 });
 
 

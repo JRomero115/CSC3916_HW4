@@ -32,9 +32,15 @@ var MovieSchema = new Schema({
 MovieSchema.pre('save', function(next) {
     var movie = this;
 
+    //hash the password
     if (!movie.isModified('title'))
         return next();
 
+    bcrypt.hash(movie.password, null, null, function(err, hash) {
+        if (err)
+            return next(err);
+
+    });
     next();
 });
 
