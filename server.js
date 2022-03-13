@@ -154,6 +154,7 @@ router.post('/movies', function(req, res) {
     }
 });
 
+/*
 router.put('/movies', function(req, res) {
     if (!req.body.title) {
         res.json({success: false, msg: 'Please update the movie title.'})
@@ -179,9 +180,10 @@ router.put('/movies', function(req, res) {
 
         res.json({success: true, msg: 'Successfully created a new movie.'})
     });
-         */
+
 });
 
+*/
 
 /*
 router.route('/movies')
