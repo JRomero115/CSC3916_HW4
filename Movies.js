@@ -29,12 +29,12 @@ var MovieSchema = new Schema({
     }]
 });
 
-MovieSchema.pre('save', function(next) {
+MovieSchema.pre('findOneAndUpdate', function(next) {
     this.getFilter();
     this.getUpdate();
 });
 
-MovieSchema.pre('findOneAndUpdate', function middleware() {
+MovieSchema.pre('save', function middleware() {
     var movie = this;
 
     //hash the password
