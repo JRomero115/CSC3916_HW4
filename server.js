@@ -125,8 +125,16 @@ router.patch('/signin', function (req, res) {
 });
 
 // Movies
+router.get('/movies', function(req, res) {
+    Movie.find(function(err, movie)) {
+        if(err)
+            res.json({msg: "Movie not found."})
+        res.json(movie);
+    }
+});
+
 router.post('/movies', function(req, res) {
-    if (!req.body.title || !req.body.year) {
+    if (!req.body.title || !req.body.year || !req.body.actor1 || !req.body.char1) {
         res.json({success: false, msg: 'Please include title, year, (1) actor and their character to add.'})
     } else {
         var movie = new Movie();
@@ -147,6 +155,10 @@ router.post('/movies', function(req, res) {
         });
     }
 });
+
+
+
+
 
 /*
 router.route('/movies')
