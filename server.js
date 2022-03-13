@@ -134,8 +134,8 @@ router.get('/movies', function(req, res) {
 });
 
 router.post('/movies', function(req, res) {
-    if (!req.body.title || !req.body.year || !req.body.actor1 || !req.body.char1) {
-        res.json({success: false, msg: 'Please include title, year, (1) actor and their character to add.'})
+    if (!req.body.title || !req.body.year || !req.body.actors) {
+        res.json({success: false, msg: 'Please include title, year, and at least (1) actor/character.'})
     } else {
         var movie = new Movie();
         movie.title = req.body.title;
