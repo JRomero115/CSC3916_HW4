@@ -126,7 +126,7 @@ router.patch('/signin', function (req, res) {
 
 // Movies
 router.route('/movies')
-    .get(authJwtController.isAuthenticated, function(req, res){
+    .get(function(req, res){
         Movie.find(function(err, movie) {
             if (err) {
                 res.json({msg: 'Movies not found.'})
@@ -135,7 +135,7 @@ router.route('/movies')
         });
     })
 
-    .post(authJwtController.isAuthenticated, function(req, res){
+    .post(function(req, res){
         var movie = new Movie();
         movie.title = req.body.title;
         movie.year = req.body.year;
@@ -150,7 +150,7 @@ router.route('/movies')
         });
     })
 
-    .put(authJwtController.isAuthenticated, function(req, res) {
+    .put(function(req, res) {
         if (!req.body.title) {
             res.json({success: false, msg: 'Please delete the movie by entering the title.'})
         } else {
@@ -171,7 +171,7 @@ router.route('/movies')
         }
     })
 
-    .delete(authJwtController.isAuthenticated, function(req, res) {
+    .delete(function(req, res) {
         if (!req.body.title) {
             res.json({success: false, msg: 'Please delete the movie by entering the title.'})
         } else {
