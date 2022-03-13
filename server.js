@@ -144,7 +144,7 @@ router.post('/movies', function(req, res) {
         movie.genre = req.body.genre;
         movie.actors = req.body.actors
 
-        Movie.findOne({ title: req.body.title, year: req.body.year }).select('title year').exec(function(err, movie) {
+        Movie.findOne({ title: req.body.title}).select('title year').exec(function(err, movie) {
             if (err) {
                 res.send(err);
             }
@@ -163,6 +163,58 @@ router.post('/movies', function(req, res) {
                 }
             })
         })
+    }
+});
+
+router.put('/movies', function(req, res) {
+    if (!req.body.title) {
+        res.json({success: false, msg: 'Please update the movie title.'})
+    } else {
+        var updateMovie = new Movie();
+        updateMovie.title = req.body.title;
+        updateMovie.year = req.body.year;
+        updateMovie.genre = req.body.genre;
+        updateMovie.actors = req.body.actors
+
+        Movie.updateOne({ title: req.body.title}).select('title').exec(function(err, updateMovie) {
+            if (err) {
+                res.send(err);
+            }
+
+            updateMovie.save(function(err) {
+                if (err) {
+                    res.json(err);
+                }
+                res.json({success: true, msg: 'Successfully updated the movie.'})
+            });
+
+        });
+    }
+});
+
+router.delete('/movies', function(req, res) {
+    if (!req.body.title) {
+        res.json({success: false, msg: 'Please delete the movie by entering the title.'})
+    } else {
+        var deleteMovie = new Movie();
+        deleteMovie.title = req.body.title;
+        deleteMovie.year = req.body.year;
+        deleteMovie.genre = req.body.genre;
+        deleteMovie.actors = req.body.actors
+
+        Movie.deleteOne({ title: req.body.title}).select('title').exec(function(err, deleteMovie) {
+            if (err) {
+                res.send(err);
+            }
+
+            deleteMovie.save(function(err) {
+                if (err) {
+                    res.json(err);
+                }
+                res.json({success: true, msg: 'Successfully deleted the movie.'})
+            });
+
+        });
     }
 });
 
