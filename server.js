@@ -126,11 +126,11 @@ router.patch('/signin', function (req, res) {
 
 // Movies
 router.get('/movies', function(req, res) {
-    Movie.find(function(err, movie)) {
+    Movie.find(function(err, movie) {
         if(err)
             res.json({msg: "Movie not found."})
         res.json(movie);
-    }
+    });
 });
 
 router.post('/movies', function(req, res) {
