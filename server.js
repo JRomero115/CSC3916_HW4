@@ -125,6 +125,31 @@ router.patch('/signin', function (req, res) {
 });
 
 // Movies
+router.post('/movies', function(req, res) {
+    if (!req.body.title || !req.body.year) {
+        res.json({success: false, msg: 'Please include title, year, (1) actor and their character to add.'})
+    } else {
+        var movie = new Movie();
+        movie.title = req.body.title;
+        movie.year = req.body.year;
+        movie.genre = req.body.genre;
+        movie.actor1 = req.body.actor1;
+        movie.char1 = req.body.char1;
+
+        movie.save(function(err){
+            if (err) {
+                if (err.code == 11000)
+                    return res.json({ success: false, msg: 'That movie already exists.'});
+                else
+                    return res.json(err);
+            }
+
+            res.json({success: true, msg: 'Successfully created a new movie.'})
+        });
+    }
+});
+
+/*
 router.route('/movies')
     .post(function (req, res) {
         if (!req.body.title || !req.body.year || !req.body.actor1 || !req.body.char1) {
@@ -164,6 +189,7 @@ router.route('/movies')
         }
 });
 
+ */
 
 /*
 router.route('/movies')
