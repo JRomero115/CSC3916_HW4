@@ -15,6 +15,7 @@ var jwt = require('jsonwebtoken');
 var cors = require('cors');
 var User = require('./Users');
 var Movie = require('./Movies');
+var Review = require('./Reviews')
 
 var app = express();
 app.use(cors());
@@ -193,6 +194,34 @@ router.patch('/movies', function (req, res) {
     res.status(401).send({success: false, msg: 'Does not support the HTTP method.'});
 });
 
+router.route('/reviews')
+    .post(authJwtController.isAuthenticated, function(req,res) {
+        Movie.findOne({title: req.body.titleOfMovie}).select('title').exec(function(err,movie) {
+            if (err) {
+                res.json({success: false, msg: 'Error finding movie.'})
+            }
+            if (movie != null) {
+                if (err){
+                    throw err
+                }
+                let review = new Review()
+                review.nameOfReviewer = req.body.name;
+                review.comment = req.body.comment
+                review.rating = req.body.rating
+                movie.avgRating.push(req.body.rating)
+                review.titleOfMovie = req.body.titleOfMovie
+                review.movieID = movie.id
+                review.save(function(err){
+                    if(err){
+                        return res.json({success: false, msg: "could not post review"})
+                    }
+                    return res.json({success: true, msg: "Review added"})
+                })
+            } else{
+                return res.json({message: "Movie was not found", error: err})
+            }
+        })
+    })
 
 app.use('/', router);
 app.listen(process.env.PORT || 8080);
