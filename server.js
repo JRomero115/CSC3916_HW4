@@ -197,29 +197,25 @@ router.patch('/movies', function (req, res) {
 // Reviews
 router.route('/reviews')
     .post(function(req, res) {
-        if (!req.body.title || !req.body.year || !req.body.actors) {
-            res.json({success: false, msg: 'Please include a title, year, and at least (1) actor/character name.'})
-        } else {
-            var review = new Review();
-            review.nameReview = req.body.nameReview;
-            review.quote = req.body.quote;
-            review.rating = req.body.rating;
+        Movie.findOne({title: req.body.title}, function (err, movie) {
+            if (err) {
+                res.json({success: false, msg: 'Error leaving review.'})
+            } else {
+                var review = new Review();
+                review.title = req.body.title;
+                review.nameReview = req.body.nameReview;
+                review.quote = req.body.quote;
+                review.rating = req.body.rating;
 
-            review.compareTitle(req.body.title, function(isMatch) {
-                if (isMatch) {
-                    review.save(function(err) {
-                        if (err) {
-                            res.json(err);
-                        }
-                        res.json({success: true, msg: 'Successfully added review for movie.'})
-                    });
-                }
-                else {
-                    res.json({success: false, msg: 'Error adding review.'})
-                }
-            })
-        }
-    })
+                review.save(function(err) {
+                    if (err) {
+                        res.json(err);
+                    }
+                    res.json({success: true, msg: 'Successfully reviewed movie.'})
+                });
+            }
+        })
+    });
 
 
 app.use('/', router);

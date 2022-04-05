@@ -14,6 +14,7 @@ try {
 
 // Review schema
 var ReviewSchema = new Schema({
+    title: { type: String, required: true },
     nameReview: { type: String, required: true },
     quote : String,
     rating: { type: Number, required: true }
@@ -22,7 +23,6 @@ var ReviewSchema = new Schema({
 ReviewSchema.pre('save', function(next) {
     var review = this;
 
-    //hash the password
     if (!review.isModified('title'))
         return next();
 
