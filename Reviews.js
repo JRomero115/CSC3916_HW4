@@ -19,4 +19,27 @@ var ReviewSchema = new Schema({
     rating: { type: Number, required: true }
 });
 
+ReviewSchema.pre('save', function(next) {
+    var review = this;
+
+    //hash the password
+    if (!review.isModified('title'))
+        return next();
+
+    bcrypt.hash(review.title, null, null, function(err, hash) {
+        if (err)
+            return next(err);
+
+    });
+    next();
+});
+
+ReviewSchema.methods.compareTitle = function (title, callback) {
+    var review = this;
+
+    bcrypt.compare(title, review.title, function(err, isMatch) {
+        callback(isMatch);
+    })
+}
+
 module.exports = mongoose.model('Review', ReviewSchema);

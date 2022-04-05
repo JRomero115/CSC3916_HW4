@@ -144,7 +144,7 @@ router.route('/movies')
             movie.title = req.body.title;
             movie.year = req.body.year;
             movie.genre = req.body.genre;
-            movie.actors = req.body.actors
+            movie.actors = req.body.actors;
 
             movie.compareTitle(req.body.title, function(isMatch) {
                 if (isMatch) {
@@ -194,34 +194,33 @@ router.patch('/movies', function (req, res) {
     res.status(401).send({success: false, msg: 'Does not support the HTTP method.'});
 });
 
+// Reviews
 router.route('/reviews')
-    .post(authJwtController.isAuthenticated, function(req,res) {
-        Movie.findOne({title: req.body.titleOfMovie}).select('title').exec(function(err,movie) {
-            if (err) {
-                res.json({success: false, msg: 'Error finding movie.'})
-            }
-            if (movie != null) {
-                if (err){
-                    throw err
+    .post(function(req, res) {
+        if (!req.body.title || !req.body.year || !req.body.actors) {
+            res.json({success: false, msg: 'Please include a title, year, and at least (1) actor/character name.'})
+        } else {
+            var review = new Review();
+            review.nameReview = req.body.nameReview;
+            review.quote = req.body.quote;
+            review.rating = req.body.rating;
+
+            review.compareTitle(req.body.title, function(isMatch) {
+                if (isMatch) {
+                    review.save(function(err) {
+                        if (err) {
+                            res.json(err);
+                        }
+                        res.json({success: true, msg: 'Successfully added review for movie.'})
+                    });
                 }
-                let review = new Review()
-                review.nameOfReviewer = req.body.name;
-                review.comment = req.body.comment
-                review.rating = req.body.rating
-                movie.avgRating.push(req.body.rating)
-                review.titleOfMovie = req.body.titleOfMovie
-                review.movieID = movie.id
-                review.save(function(err){
-                    if(err){
-                        return res.json({success: false, msg: "could not post review"})
-                    }
-                    return res.json({success: true, msg: "Review added"})
-                })
-            } else{
-                return res.json({message: "Movie was not found", error: err})
-            }
-        })
+                else {
+                    res.json({success: false, msg: 'Error adding review.'})
+                }
+            })
+        }
     })
+
 
 app.use('/', router);
 app.listen(process.env.PORT || 8080);
