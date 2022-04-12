@@ -127,6 +127,40 @@ router.patch('/signin', function (req, res) {
 
 // Movies
 router.route('/movies')
+    .get(function (req, res) {
+        if (req.query.reviews == "true") {
+            Movie.find(function(err, movie) {
+                if(err) {
+                    res.json({success: false, msg: 'Error finding movies.'})
+                } else {
+                    Movie.aggregate([
+                        {$lookup:
+                                {from: "reviews", localField: "title", foreignField: "title", as: "review"}},
+                        {$addFields:
+                                {averageRate: {$avg: "$review.rating"}}}
+                    ]).exec(function(err, movie) {
+                        Movie.find(function(err, movie){
+                            if(err) {
+                                res.json(err)
+                            } else {
+                                res.json(movie)
+                            }
+
+                        })
+                    })
+                }
+            })
+        } else {
+            Movie.find({title: req.body.title}).select("title year genre actors").exec(function(err, movie) {
+                if(err) {
+                    res.json({success: false, msg: 'Error finding movie reviews.'})
+                } else {
+                    res.json({success: true, msg: 'Reviews for the movie were found.'})
+                }
+            })
+        }
+    })
+
     .get(authJwtController.isAuthenticated, function(req, res) {
         Movie.find(function(err, movie) {
             if (err) {
@@ -153,7 +187,7 @@ router.route('/movies')
                 else {
                     movie.save(function(err) {
                         if (err) {
-                            res.json(err);
+                            res.json(err)
                         }
                         res.json({success: true, msg: 'Successfully created a new movie.'})
                     });
@@ -196,7 +230,7 @@ router.patch('/movies', function (req, res) {
 
 // Reviews
 router.route('/reviews')
-    .get(function (req, res){
+    .get(function (req, res) {
         if(!req.body.title){
             res.json({success: false, msg: 'Error leaving review.'})
         } else if (req.query.reviews == "true") {
