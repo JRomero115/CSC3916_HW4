@@ -223,17 +223,17 @@ router.route('/reviews')
         } else {
             Movie.find({title: req.body.title}).select("title year genre actors").exec(function(err, movie) {
                 if(err) {
-                    return res.status(404).json({success: false, msg: "cant find movie"})
+                    res.json({success: false, msg: 'Error finding movie reviews.'})
                 } else {
-                    return res.status(200).json({success: true, msg: "movie found", Movie: movie})
+                    res.json({success: true, msg: 'Reviews for the movie were found.'})
                 }
             })
         }
     })
 
-    .post(authJwtController.isAuthenticated, function (req,res) {
-        if (!req.body.title || !req.body.year || !req.body.actors) {
-            res.json({success: false, msg: 'Please include a title, year, and at least (1) actor/character name.'})
+    .post(authJwtController.isAuthenticated, function (req, res) {
+        if (!req.body.title || !req.body.nameReview || !req.body.quote || !req.body.rating) {
+            res.json({success: false, msg: 'Please include a title, your name, a quote, and a rating out of 5.'})
         } else {
             var review = new Review();
             Movie.findOne({title: req.body.title}, function (err, movie) {
