@@ -14,9 +14,9 @@ try {
 
 // Review schema
 var ReviewSchema = new Schema({
-    title: { type: String, required: true },
-    nameReview: { type: String, required: true },
-    quote : String,
+    title: { type: Schema.Types.ObjectId, ref: "MovieSchema", required: true },
+    nameReview: { type: Schema.Types.ObjectId, ref: "UserSchema", required: true },
+    quote : { type: String, required: true },
     rating: { type: Number, required: true }
 });
 
