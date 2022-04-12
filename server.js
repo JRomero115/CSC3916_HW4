@@ -130,7 +130,7 @@ router.route('/movies')
     .get(function (req, res) {
         if (req.query.reviews == "true") {
             Movie.find(function(err, movie) {
-                if(err) {
+                if (err) {
                     res.json({success: false, msg: 'Error finding movies.'})
                 } else {
                     Movie.aggregate([
@@ -140,7 +140,7 @@ router.route('/movies')
                                 {averageRate: {$avg: "$review.rating"}}}
                     ]).exec(function(err, movie) {
                         Movie.find(function(err, movie){
-                            if(err) {
+                            if (err) {
                                 res.json(err)
                             } else {
                                 res.json(movie)
@@ -151,11 +151,11 @@ router.route('/movies')
                 }
             })
         } else {
-            Movie.find({title: req.body.title}).select("title year genre actors").exec(function(err, movie) {
-                if(err) {
+            Movie.find(function(err, movie) {
+                if (err) {
                     res.json({success: false, msg: 'Error finding movies.'})
                 } else {
-                    //res.json({success: true, msg: 'Movies were found.'})
+                    res.json({success: true, msg: 'Movies were found.'})
                     res.json(movie)
                 }
             })
@@ -229,7 +229,7 @@ router.route('/reviews')
             res.json({success: false, msg: 'Error leaving review.'})
         } else if (req.query.reviews == "true") {
             Movie.findOne({title: req.body.title}, function (err, movie){
-                if(err) {
+                if (err) {
                     res.json({success: false, msg: 'Error finding movies.'})
                 } else {
                     Movie.aggregate([
@@ -240,7 +240,7 @@ router.route('/reviews')
                         {$addFields:
                                 {averageRate: {$avg: "$review.rating"}}}
                     ]).exec(function(err, movie) {
-                        if(err) {
+                        if (err) {
                             return res.json(err)
                         } else {
                             return res.json(movie)
@@ -250,10 +250,10 @@ router.route('/reviews')
             })
         } else {
             Movie.find({title: req.body.title}).select("title year genre actors").exec(function(err, movie) {
-                if(err) {
-                    res.json({success: false, msg: 'Error finding movie reviews.'})
+                if (err) {
+                    res.json({success: false, msg: 'Error finding movie review.'})
                 } else {
-                    res.json({success: true, msg: 'Reviews for the movie were found.'})
+                    res.json({success: true, msg: 'Review for the movie was found.'})
                 }
             })
         }
