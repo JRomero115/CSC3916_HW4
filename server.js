@@ -162,15 +162,6 @@ router.route('/movies')
         }
     })
 
-    .get(authJwtController.isAuthenticated, function(req, res) {
-        Movie.find(function(err, movie) {
-            if (err) {
-                res.json({msg: 'Movies not found.'})
-            }
-            res.json(movie);
-        });
-    })
-
     .post(authJwtController.isAuthenticated, function(req, res) {
         if (!req.body.title || !req.body.year || !req.body.actors) {
             res.json({success: false, msg: 'Please include a title, year, and at least (1) actor/character name.'})
