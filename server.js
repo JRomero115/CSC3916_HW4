@@ -196,27 +196,65 @@ router.patch('/movies', function (req, res) {
 
 // Reviews
 router.route('/reviews')
-    .post(function(req, res) {
-        Movie.findOne({title: req.body.title}, function (err, movie) {
-            if (err) {
-                res.json({success: false, msg: 'Error leaving review.'})
-            } else {
-                var review = new Review();
-                review.title = req.body.title;
-                review.nameReview = req.body.nameReview;
-                review.quote = req.body.quote;
-                review.rating = req.body.rating;
+    .get(function (req, res){
+        if(!req.body.title){
+            res.json({success: false, msg: 'Error leaving review.'})
+        } else if (req.query.reviews == "true") {
+            Movie.findOne({title: req.body.title}, function (err, movie){
+                if(err) {
+                    res.json({success: false, msg: 'Error finding movies.'})
+                } else {
+                    Movie.aggregate([
+                        {$match :
+                                {title: req.body.title}},
+                        {$lookup:
+                                {from: "reviews", localField: "title", foreignField: "title", as: "review"}},
+                        {$addFields:
+                                {averageRate: {$avg: "$review.rating"}}}
+                    ]).exec(function(err, movie) {
+                        if(err) {
+                            return res.json(err)
+                        } else {
+                            return res.json(movie)
+                        }
+                    })
+                }
+            })
+        } else {
+            Movie.find({title: req.body.title}).select("title year genre actors").exec(function(err, movie) {
+                if(err) {
+                    return res.status(404).json({success: false, msg: "cant find movie"})
+                } else {
+                    return res.status(200).json({success: true, msg: "movie found", Movie: movie})
+                }
+            })
+        }
+    })
 
-                review.save(function(err) {
-                    if (err) {
-                        res.json(err);
-                    }
-                    res.json({success: true, msg: 'Successfully reviewed movie.'})
-                });
-            }
-        })
+    .post(authJwtController.isAuthenticated, function (req,res) {
+        if (!req.body.title || !req.body.year || !req.body.actors) {
+            res.json({success: false, msg: 'Please include a title, year, and at least (1) actor/character name.'})
+        } else {
+            var review = new Review();
+            Movie.findOne({title: req.body.title}, function (err, movie) {
+                if (err) {
+                    res.json({success: false, msg: 'Error leaving review.'})
+                } else {
+                    review.title = req.body.title;
+                    review.nameReview = req.body.nameReview;
+                    review.quote = req.body.quote;
+                    review.rating = req.body.rating;
+
+                    review.save(function (err) {
+                        if (err) {
+                            return res.json(err)
+                        }
+                        res.json({success: true, msg: 'Successfully reviewed movie.'})
+                    })
+                }
+            })
+        }
     });
-
 
 app.use('/', router);
 app.listen(process.env.PORT || 8080);
