@@ -127,7 +127,7 @@ router.patch('/signin', function (req, res) {
 
 // Movies
 router.route('/movies')
-    .get(function (req, res) {
+    .get(authJwtController.isAuthenticated, function(req, res) {
         if (req.query.reviews == "true") {
             Movie.find(function(err, movie) {
                 if (err) {
