@@ -155,7 +155,7 @@ router.route('/movies')
                 if(err) {
                     res.json({success: false, msg: 'Error finding movies.'})
                 } else {
-                    res.json({success: true, msg: 'Movies were found.'})
+                    //res.json({success: true, msg: 'Movies were found.'})
                     res.json(movie)
                 }
             })
