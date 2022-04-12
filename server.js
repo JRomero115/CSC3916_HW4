@@ -155,7 +155,7 @@ router.route('/movies')
                 if (err) {
                     res.json({success: false, msg: 'Error finding movies.'})
                 } else {
-                    res.json({success: true, msg: 'Movies were found.', Movies: movie})
+                    res.json({success: true, msg: 'Movies were found.', movies: movie})
                 }
             })
         }
@@ -171,7 +171,7 @@ router.route('/movies')
             movie.genre = req.body.genre;
             movie.actors = req.body.actors;
 
-            Movie.findOne( { title: movie.title }).select('title').exec(function(err, movie) {
+            Movie.findOne( { title: req.body.title }).select('title').exec(function(err, movie) {
                 movie.compareTitle(req.body.title, function(isMatch) {
                     if (isMatch) {
                         res.json({success: false, msg: 'Movie already exists.'})
@@ -180,8 +180,9 @@ router.route('/movies')
                         movie.save(function(err) {
                             if (err) {
                                 res.json(err)
+                            } else {
+                                res.json({success: true, msg: 'Successfully created a new movie.'})
                             }
-                            res.json({success: true, msg: 'Successfully created a new movie.'})
                         })
                     }
                 })
