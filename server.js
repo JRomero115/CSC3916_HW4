@@ -44,6 +44,18 @@ function getJSONObjectForMovieRequirement(req) {
     return json;
 }
 
+router.route('/postjwt')
+    .post(authJwtController.isAuthenticated, function (req, res) {
+            console.log(req.body);
+            res = res.status(200);
+            if (req.get('Content-Type')) {
+                console.log("Content-Type: " + req.get('Content-Type'));
+                res = res.type(req.get('Content-Type'));
+            }
+            res.send(req.body);
+        }
+    );
+
 // Sign-up
 router.post('/signup', function(req, res) {
     if (!req.body.username || !req.body.password) {
@@ -127,7 +139,7 @@ router.patch('/signin', function (req, res) {
 
 // Movies
 router.route('/movies')
-    .get(function(req, res) {
+    .get(authJwtController.isAuthenticated, function(req, res) {
         if (req.query.reviews == "true") {
             Movie.find(function(err, movie) {
                 if (err) {
@@ -161,7 +173,7 @@ router.route('/movies')
         }
     })
 
-    .post(function(req, res) {
+    .post(authJwtController.isAuthenticated, function(req, res) {
         if (!req.body.title || !req.body.year || !req.body.actors) {
             res.json({success: false, msg: 'Please include a title, year, and at least (1) actor/character name.'})
         } else {
@@ -190,7 +202,7 @@ router.route('/movies')
         }
     })
 
-    .put(function(req, res) {
+    .put(authJwtController.isAuthenticated, function(req, res) {
         if (!req.body.title) {
             res.json({success: false, msg: 'Please update the movie by entering the title.'})
         } else {
@@ -204,7 +216,7 @@ router.route('/movies')
         }
     })
 
-    .delete(function(req, res) {
+    .delete(authJwtController.isAuthenticated, function(req, res) {
         if (!req.body.title) {
             res.json({success: false, msg: 'Please delete the movie by entering the title.'})
         } else {
@@ -259,7 +271,7 @@ router.route('/reviews')
         }
     })
 
-    .post(function (req, res) {
+    .post(authJwtController.isAuthenticated, function (req, res) {
         if (!req.body.title || !req.body.nameReview || !req.body.quote || !req.body.rating) {
             res.json({success: false, msg: 'Please include a title, your name, a quote, and a rating out of 5.'})
         } else {
