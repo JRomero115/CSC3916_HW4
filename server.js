@@ -127,7 +127,7 @@ router.patch('/signin', function (req, res) {
 
 // Movies
 router.route('/movies')
-    .get(authJwtController.isAuthenticated, function(req, res) {
+    .get(function(req, res) {
         if (req.query.reviews == "true") {
             Movie.find(function(err, movie) {
                 if (err) {
@@ -161,7 +161,7 @@ router.route('/movies')
         }
     })
 
-    .post(authJwtController.isAuthenticated, function(req, res) {
+    .post(function(req, res) {
         if (!req.body.title || !req.body.year || !req.body.actors) {
             res.json({success: false, msg: 'Please include a title, year, and at least (1) actor/character name.'})
         } else {
@@ -190,7 +190,7 @@ router.route('/movies')
         }
     })
 
-    .put(authJwtController.isAuthenticated, function(req, res) {
+    .put(function(req, res) {
         if (!req.body.title) {
             res.json({success: false, msg: 'Please update the movie by entering the title.'})
         } else {
@@ -204,7 +204,7 @@ router.route('/movies')
         }
     })
 
-    .delete(authJwtController.isAuthenticated, function(req, res) {
+    .delete(function(req, res) {
         if (!req.body.title) {
             res.json({success: false, msg: 'Please delete the movie by entering the title.'})
         } else {
@@ -259,7 +259,7 @@ router.route('/reviews')
         }
     })
 
-    .post(authJwtController.isAuthenticated, function (req, res) {
+    .post(function (req, res) {
         if (!req.body.title || !req.body.nameReview || !req.body.quote || !req.body.rating) {
             res.json({success: false, msg: 'Please include a title, your name, a quote, and a rating out of 5.'})
         } else {
