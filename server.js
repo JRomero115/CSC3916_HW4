@@ -153,9 +153,9 @@ router.route('/movies')
         } else {
             Movie.find({title: req.body.title}).select("title year genre actors").exec(function(err, movie) {
                 if(err) {
-                    res.json({success: false, msg: 'Error finding movie reviews.'})
+                    res.json({success: false, msg: 'Error finding movies.'})
                 } else {
-                    res.json({success: true, msg: 'Reviews for the movie were found.'})
+                    res.json({success: true, msg: 'Movies were found.'})
                 }
             })
         }
