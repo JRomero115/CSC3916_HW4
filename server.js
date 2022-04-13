@@ -277,7 +277,12 @@ router.route('/reviews')
                     if (err) {
                         res.json(err)
                     } else {
-                        res.json({success: true, msg: 'Successfully reviewed the movie.', reviews: movie})
+                        review.save(function(err) {
+                            if (err) {
+                                res.json(err);
+                            }
+                            res.json({success: true, msg: 'Successfully reviewed the movie.', reviews: movie})
+                        });
                     }
                 })
 
