@@ -44,18 +44,6 @@ function getJSONObjectForMovieRequirement(req) {
     return json;
 }
 
-router.route('/postjwt')
-    .post(authJwtController.isAuthenticated, function (req, res) {
-            console.log(req.body);
-            res = res.status(200);
-            if (req.get('Content-Type')) {
-                console.log("Content-Type: " + req.get('Content-Type'));
-                res = res.type(req.get('Content-Type'));
-            }
-            res.send(req.body);
-        }
-    );
-
 // Sign-up
 router.post('/signup', function(req, res) {
     if (!req.body.username || !req.body.password) {
@@ -139,7 +127,7 @@ router.patch('/signin', function (req, res) {
 
 // Movies
 router.route('/movies')
-    .get(authJwtController.isAuthenticated, function(req, res) {
+    .get(function(req, res) {
         if (req.query.reviews == "true") {
             Movie.find(function(err, movie) {
                 if (err) {
@@ -173,7 +161,7 @@ router.route('/movies')
         }
     })
 
-    .post(authJwtController.isAuthenticated, function(req, res) {
+    .post(function(req, res) {
         if (!req.body.title || !req.body.year || !req.body.actors) {
             res.json({success: false, msg: 'Please include a title, year, and at least (1) actor/character name.'})
         } else {
@@ -202,7 +190,7 @@ router.route('/movies')
         }
     })
 
-    .put(authJwtController.isAuthenticated, function(req, res) {
+    .put(function(req, res) {
         if (!req.body.title) {
             res.json({success: false, msg: 'Please update the movie by entering the title.'})
         } else {
@@ -216,7 +204,7 @@ router.route('/movies')
         }
     })
 
-    .delete(authJwtController.isAuthenticated, function(req, res) {
+    .delete(function(req, res) {
         if (!req.body.title) {
             res.json({success: false, msg: 'Please delete the movie by entering the title.'})
         } else {
@@ -240,17 +228,17 @@ router.route('/reviews')
         if(!req.body.title){
             res.json({success: false, msg: 'Error leaving review.'})
         } else if (req.query.reviews == "true") {
-            Movie.findOne({title: req.body.title}, function (err, movie){
+            Movie.findOne({ title: req.body.title }, function (err, movie){
                 if (err) {
                     res.json({success: false, msg: 'Error finding movies.'})
                 } else {
                     Movie.aggregate([
                         {$match :
-                                {title: req.body.title}},
+                                { title: req.body.title }},
                         {$lookup:
-                                {from: "reviews", localField: "title", foreignField: "title", as: "review"}},
+                                { from: "reviews", localField: "title", foreignField: "title", as: "review" }},
                         {$addFields:
-                                {averageRate: {$avg: "$review.rating"}}}
+                                { averageRate: {$avg: "$review.rating" }}}
                     ]).exec(function(err, movie) {
                         if (err) {
                             return res.json(err)
@@ -271,9 +259,9 @@ router.route('/reviews')
         }
     })
 
-    .post(authJwtController.isAuthenticated, function (req, res) {
+    .post(function (req, res) {
         if (!req.body.title || !req.body.nameReview || !req.body.quote || !req.body.rating) {
-            res.json({success: false, msg: 'Please include a title, your name, a quote, and a rating out of 5.'})
+            res.json({success: false, msg: 'Please include a title, username, a quote, and a rating out of 5.'})
         } else {
             Movie.findOne({title: req.body.title}, function (err, movie) {
                 if (err) {
