@@ -266,10 +266,7 @@ router.route('/reviews')
                 review.rating = req.body.rating;
 
                 review.save(function (err, reviews) {
-                    if (err) {
-                        res.json(err);
-                    }
-                    res.json({success: true, msg: 'Successfully reviewed movie.', review: reviews })
+                    res.json({success: true, msg: 'Successfully reviewed movie.', review: req.body.quote, rating: req.body.rating })
                 });
             })
         }
