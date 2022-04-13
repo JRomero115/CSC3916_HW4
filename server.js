@@ -144,27 +144,21 @@ router.route('/movies')
             movie.title = req.body.title;
             movie.year = req.body.year;
             movie.genre = req.body.genre;
-            movie.actors = req.body.actors;
+            movie.actors = req.body.actors
 
-            Movie.findOne(function(err, movie) {
-                if (err) {
-                    res.json({msg: 'Movies not found.'})
-                } else {
-                    movie.compareTitle(req.body.title, function(isMatch) {
-                        if (isMatch) {
-                            res.json({success: false, msg: 'Movie already exists.'})
-                        }
-                        else {
-                            movie.save(function(err) {
-                                if (err) {
-                                    res.json(err);
-                                }
-                                res.json({success: true, msg: 'Successfully created a new movie.'})
-                            });
-                        }
-                    })
+            movie.compareTitle(req.body.title, function(isMatch) {
+                if (isMatch) {
+                    res.json({success: false, msg: 'Movie already exists.'})
                 }
-            });
+                else {
+                    movie.save(function(err) {
+                        if (err) {
+                            res.json(err);
+                        }
+                        res.json({success: true, msg: 'Successfully created a new movie.'})
+                    });
+                }
+            })
         }
     })
 
@@ -195,6 +189,10 @@ router.route('/movies')
             });
         }
     });
+
+router.patch('/movies', function (req, res) {
+    res.status(401).send({success: false, msg: 'Does not support the HTTP method.'});
+});
 /*
 // Reviews
 router.route('/reviews')
