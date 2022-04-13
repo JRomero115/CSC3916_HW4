@@ -139,6 +139,9 @@ router.route('/movies')
                         {$addFields:
                                 {averageRate: {$avg: "$review.rating"}}}
                     ]).exec(function(err, movie) {
+                        if (err) {
+                            res.json(err)
+                        }
                         Movie.find(function(err, movie){
                             if (err) {
                                 res.json(err)
@@ -225,10 +228,10 @@ router.patch('/movies', function (req, res) {
 // Reviews
 router.route('/reviews')
     .get(function (req, res) {
-        if(!req.body.title){
+        if(!req.body.title) {
             res.json({success: false, msg: 'Error leaving review.'})
         } else if (req.query.reviews == "true") {
-            Movie.findOne({ title: req.body.title }, function (err, movie){
+            Movie.findOne({ title: req.body.title }, function (err, movie) {
                 if (err) {
                     res.json({success: false, msg: 'Error finding movies.'})
                 } else {
@@ -263,7 +266,7 @@ router.route('/reviews')
         if (!req.body.title || !req.body.nameReview || !req.body.quote || !req.body.rating) {
             res.json({success: false, msg: 'Please include a title, username, a quote, and a rating out of 5.'})
         } else {
-            Movie.findOne({title: req.body.title}, function (err, movie) {
+            Movie.findOne({title: req.body.title}, function (err, reviews) {
                 if (err) {
                     res.json({success: false, msg: 'Error leaving review.'})
                 } else {
@@ -273,7 +276,7 @@ router.route('/reviews')
                     review.quote = req.body.quote;
                     review.rating = req.body.rating;
 
-                    review.save(function (err) {
+                    reviews.save(function (err) {
                         if (err) {
                             return res.json(err)
                         }
