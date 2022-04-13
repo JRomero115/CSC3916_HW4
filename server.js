@@ -282,13 +282,6 @@ router.route('/reviews')
                         res.json({success: true, msg: 'Successfully reviewed the movie.', reviews: movie})
                     }
                 })
-
-                review.save(function(err) {
-                    if (err) {
-                        res.json(err);
-                    }
-                });
-
             })
         }
     });
