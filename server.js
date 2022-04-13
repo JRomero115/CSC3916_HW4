@@ -256,9 +256,9 @@ router.route('/reviews')
 
     .post(function(req, res) {
         if (!req.body.title || !req.body.nameReview || !req.body.quote || !req.body.rating) {
-            res.json({success: false, msg: 'Please include a title, username, a quote, and a rating out of 5.'})
+            res.json({success: false, msg: 'Please include the movie title, your username, review, and a rating out of 5.'})
         } else {
-            Movie.findOne({ title: req.body.title }, function (err, movie) {
+            Movie.findOne({ title: req.body.title }, function (err, review) {
                 var review = new Review();
                 review.title = req.body.title;
                 review.nameReview = req.body.nameReview;
@@ -283,6 +283,7 @@ router.route('/reviews')
                             if (err) {
                                 res.json(err);
                             }
+                            res.json({success: true, msg: 'Successfully created a new movie.'})
                         });
                         res.json({success: true, msg: 'Successfully reviewed the movie.', reviews: movie})
                     }
