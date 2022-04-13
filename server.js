@@ -241,7 +241,7 @@ router.route('/reviews')
             review.quote = req.body.quote;
             review.rating = req.body.rating;
 
-            Review.findOne({ title: req.body.title }, function (err, reviews) {
+            Movie.findOne({ title: req.body.title }, function (err, reviews) {
                 if (err) {
                     res.json({success: false, msg: 'Error finding movie review.'})
                 } else {
