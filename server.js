@@ -241,19 +241,21 @@ router.route('/reviews')
             review.quote = req.body.quote;
             review.rating = req.body.rating;
 
-            Review.findOne(function(err, reviews) {
-                reviews.compareTitle(req.body.title, function (isMatch) {
-                    if (isMatch) {
-                        res.json({success: false, msg: 'Movie review already exists.'})
-                    } else {
-                        reviews.save(function (err) {
-                            if (err) {
-                                res.json(err);
-                            }
-                            res.json({success: true, msg: 'Successfully created a review.'})
-                        });
-                    }
-                })
+            Review.findOne({ title: req.body.title }, function (err, reviews) {
+                if (err) {
+                    res.json({success: false, msg: 'Error finding movie review.'})
+                } else {
+                    Movie.aggregate([
+                        {$push :
+                                { review: req.body.quote, averageRate: req.body.rating }}
+                    ]).exec(function(err, movie) {
+                        if (err) {
+                            res.json(err)
+                        } else {
+                            res.json({success: true, msg: 'Successfully reviewed movie.'})
+                        }
+                    })
+                }
             })
         }
     });
