@@ -193,7 +193,7 @@ router.route('/movies')
 router.patch('/movies', function (req, res) {
     res.status(401).send({success: false, msg: 'Does not support the HTTP method.'});
 });
-/*
+
 // Reviews
 router.route('/reviews')
     .get(function (req, res) {
@@ -257,7 +257,6 @@ router.route('/reviews')
             })
         }
     });
-*/
 
 /*
 // Movies
