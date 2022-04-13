@@ -32,7 +32,6 @@ var MovieSchema = new Schema({
 MovieSchema.pre('save', function(next) {
     var movie = this;
 
-    //hash the password
     if (!movie.isModified('title'))
         return next();
 

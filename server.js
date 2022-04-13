@@ -265,24 +265,27 @@ router.route('/reviews')
                 review.quote = req.body.quote;
                 review.rating = req.body.rating;
 
-                review.save(function (err) {
-                    Movie.aggregate([
-                        {$match:
-                                {title: req.body.title}
-                        },
-                        {$lookup:
-                                {from: "reviews", localField: "title", foreignField: "title", as: "review"}
-                        },
-                        {$addFields:
-                                {review: req.body.quote, rating: req.body.rating}
-                        }
-                    ]).exec(function (err, movie) {
-                        if (err) {
-                            res.json(err)
-                        } else {
-                            res.json({success: true, msg: 'Successfully reviewed the movie.', reviews: movie})
-                        }
-                    })
+                Movie.aggregate([
+                    {$match:
+                            {title: req.body.title}
+                    },
+                    {$lookup:
+                            {from: "reviews", localField: "title", foreignField: "title", as: "review"}
+                    },
+                    {$addFields:
+                            {review: req.body.quote, rating: req.body.rating}
+                    }
+                ]).exec(function (err, movie) {
+                    if (err) {
+                        res.json(err)
+                    } else {
+                        review.save(function(err) {
+                            if (err) {
+                                res.json(err);
+                            }
+                        });
+                        res.json({success: true, msg: 'Successfully reviewed the movie.', reviews: movie})
+                    }
                 })
 
             })
