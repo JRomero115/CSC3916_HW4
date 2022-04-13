@@ -139,7 +139,7 @@ router.route('/movies')
                         {$lookup:
                                 { from: "reviews", localField: "title", foreignField: "title", as: "review" }},
                         {$addFields:
-                                { rating: "$review.rating" }}
+                                { review: req.body.quote, rating: req.body.rating }}
                     ]).exec(function(err, movie) {
                         if (err) {
                             res.json(err)
@@ -233,7 +233,7 @@ router.route('/reviews')
                         {$lookup:
                                 { from: "reviews", localField: "title", foreignField: "title", as: "review" }},
                         {$addFields:
-                                { rating: "$review.rating" }}
+                                { review: req.body.quote, rating: req.body.rating }}
                     ]).exec(function(err, movie) {
                         if (err) {
                             return res.json(err)
@@ -265,6 +265,7 @@ router.route('/reviews')
                 review.quote = req.body.quote;
                 review.rating = req.body.rating;
 
+
                 Movie.aggregate([
                     {$match :
                             { title: req.body.title }},
@@ -274,12 +275,17 @@ router.route('/reviews')
                             { review: req.body.quote, rating: req.body.rating }}
                 ]).exec(function(err, movie) {
                     if (err) {
-                        return res.json(err)
+                        res.json(err)
                     } else {
-                        return res.json(movie)
+                        res.json({success: true, msg: 'Successfully reviewed the movie.', reviews: movie})
                     }
                 })
 
+                movie.save(function(err) {
+                    if (err) {
+                        res.json(err);
+                    }
+                });
 
             })
         }
