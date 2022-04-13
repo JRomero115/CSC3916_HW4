@@ -271,7 +271,7 @@ router.route('/reviews')
                             { title: req.body.title }},
                     {$lookup:
                             { from: "reviews", localField: "title", foreignField: "title", as: "review" }},
-                    {$merge:
+                    {$addFields:
                             { review: req.body.quote, rating: req.body.rating }}
                 ]).exec(function(err, movie) {
                     if (err) {
