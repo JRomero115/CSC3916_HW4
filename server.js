@@ -128,6 +128,72 @@ router.patch('/signin', function (req, res) {
 // Movies
 router.route('/movies')
     .get(function(req, res) {
+        Movie.find(function(err, movie) {
+            if (err) {
+                res.json({msg: 'Movies not found.'})
+            }
+            res.json(movie);
+        });
+    })
+
+    .post(function(req, res) {
+        if (!req.body.title || !req.body.year || !req.body.actors) {
+            res.json({success: false, msg: 'Please include a title, year, and at least (1) actor/character name.'})
+        } else {
+            var movie = new Movie();
+            movie.title = req.body.title;
+            movie.year = req.body.year;
+            movie.genre = req.body.genre;
+            movie.actors = req.body.actors
+
+            movie.compareTitle(req.body.title, function(isMatch) {
+                if (isMatch) {
+                    res.json({success: false, msg: 'Movie already exists.'})
+                }
+                else {
+                    movie.save(function(err) {
+                        if (err) {
+                            res.json(err);
+                        }
+                        res.json({success: true, msg: 'Successfully created a new movie.'})
+                    });
+                }
+            })
+        }
+    })
+
+    .put(function(req, res) {
+        if (!req.body.title) {
+            res.json({success: false, msg: 'Please update the movie by entering the title.'})
+        } else {
+            Movie.updateOne({title: req.body.title}, function (err, movie) {
+                if (err) {
+                    res.json({success: false, msg: 'Movie was not found.'})
+                } else {
+                    res.json({success: true, msg: 'Successfully updated the movie.'});
+                }
+            });
+        }
+    })
+
+    .delete(function(req, res) {
+        if (!req.body.title) {
+            res.json({success: false, msg: 'Please delete the movie by entering the title.'})
+        } else {
+            Movie.deleteOne({title: req.body.title}, function (err, movie) {
+                if (err) {
+                    res.json({success: false, msg: 'Movie was not found.'});
+                } else {
+                    res.json({success: true, msg: 'Successfully deleted the movie.'});
+                }
+            });
+        }
+    });
+
+/*
+// Movies
+router.route('/movies')
+    .get(function(req, res) {
         if (req.query.reviews == "true") {
             Movie.find(function(err, movie) {
                 if (err) {
@@ -286,6 +352,8 @@ router.route('/reviews')
             })
         }
     });
+
+*/
 
 app.use('/', router);
 app.listen(process.env.PORT || 8080);
