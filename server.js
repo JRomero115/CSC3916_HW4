@@ -195,7 +195,7 @@ router.route('/movies')
             });
         }
     });
-
+/*
 // Reviews
 router.route('/reviews')
     .get(function (req, res) {
@@ -259,6 +259,7 @@ router.route('/reviews')
             })
         }
     });
+*/
 
 /*
 // Movies
