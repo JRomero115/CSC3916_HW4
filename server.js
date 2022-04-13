@@ -144,21 +144,27 @@ router.route('/movies')
             movie.title = req.body.title;
             movie.year = req.body.year;
             movie.genre = req.body.genre;
-            movie.actors = req.body.actors
+            movie.actors = req.body.actors;
 
-            movie.compareTitle(req.body.title, function(isMatch) {
-                if (isMatch) {
-                    res.json({success: false, msg: 'Movie already exists.'})
-                }
-                else {
-                    movie.save(function(err) {
-                        if (err) {
-                            res.json(err);
+            Movie.findOne(function(err, movie) {
+                if (err) {
+                    res.json({msg: 'Movies not found.'})
+                } else {
+                    movie.compareTitle(req.body.title, function(isMatch) {
+                        if (isMatch) {
+                            res.json({success: false, msg: 'Movie already exists.'})
                         }
-                        res.json({success: true, msg: 'Successfully created a new movie.'})
-                    });
+                        else {
+                            movie.save(function(err) {
+                                if (err) {
+                                    res.json(err);
+                                }
+                                res.json({success: true, msg: 'Successfully created a new movie.'})
+                            });
+                        }
+                    })
                 }
-            })
+            });
         }
     })
 
@@ -187,6 +193,70 @@ router.route('/movies')
                     res.json({success: true, msg: 'Successfully deleted the movie.'});
                 }
             });
+        }
+    });
+
+// Reviews
+router.route('/reviews')
+    .get(function (req, res) {
+        if(!req.body.title) {
+            res.json({success: false, msg: 'Error getting movie.'})
+        } else if (req.query.reviews == "true") {
+            Movie.findOne({ title: req.body.title }, function (err, movie) {
+                if (err) {
+                    res.json({success: false, msg: 'Error finding movie review.'})
+                } else {
+                    Movie.aggregate([
+                        {$match :
+                                { title: req.body.title }},
+                        {$lookup:
+                                { from: "reviews", localField: "title", foreignField: "title", as: "review" }},
+                        {$addFields:
+                                { averageRate: {$avg: "$review.rating" }}}
+                    ]).exec(function(err, movie) {
+                        if (err) {
+                            return res.json(err)
+                        } else {
+                            return res.json(movie)
+                        }
+                    })
+                }
+            })
+        } else {
+            Movie.find({title: req.body.title}).select("title year genre actors").exec(function(err, movie) {
+                if (err) {
+                    res.json({success: false, msg: 'Error finding movie review.'})
+                } else {
+                    res.json({success: true, msg: 'Review for the movie was found.'})
+                }
+            })
+        }
+    })
+
+    .post(function(req, res) {
+        if (!req.body.title || !req.body.nameReview || !req.body.quote || !req.body.rating) {
+            res.json({success: false, msg: 'Please include a title, username, a quote, and a rating out of 5.'})
+        } else {
+            var review = new Review();
+            review.title = req.body.title;
+            review.nameReview = req.body.nameReview;
+            review.quote = req.body.quote;
+            review.rating = req.body.rating;
+
+            Review.findOne(function(err, reviews) {
+                reviews.compareTitle(req.body.title, function (isMatch) {
+                    if (isMatch) {
+                        res.json({success: false, msg: 'Movie review already exists.'})
+                    } else {
+                        reviews.save(function (err) {
+                            if (err) {
+                                res.json(err);
+                            }
+                            res.json({success: true, msg: 'Successfully created a review.'})
+                        });
+                    }
+                })
+            })
         }
     });
 
@@ -295,7 +365,7 @@ router.patch('/movies', function (req, res) {
 router.route('/reviews')
     .get(function (req, res) {
         if(!req.body.title) {
-            res.json({success: false, msg: 'Error leaving review.'})
+            res.json({success: false, msg: 'Error getting review.'})
         } else if (req.query.reviews == "true") {
             Movie.findOne({ title: req.body.title }, function (err, movie) {
                 if (err) {
