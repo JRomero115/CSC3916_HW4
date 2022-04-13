@@ -265,8 +265,20 @@ router.route('/reviews')
                 review.quote = req.body.quote;
                 review.rating = req.body.rating;
 
-                db.movie.insert({ review: req.body.quote, rating: req.body.rating })
-                res.json({success: true, msg: 'Successfully reviewed movie.', reviews: movie})
+                Movie.aggregate([
+                    {$match :
+                            { title: req.body.title }},
+                    {$lookup:
+                            { from: "reviews", localField: "title", foreignField: "title", as: "review" }},
+                    {$addFields:
+                            { review: req.body.quote, rating: req.body.rating }}
+                ]).exec(function(err, movie) {
+                    if (err) {
+                        return res.json(err)
+                    } else {
+                        return res.json(movie)
+                    }
+                })
 
 
             })
