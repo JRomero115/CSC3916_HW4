@@ -258,16 +258,15 @@ router.route('/reviews')
         if (!req.body.title || !req.body.nameReview || !req.body.quote || !req.body.rating) {
             res.json({success: false, msg: 'Please include a title, username, a quote, and a rating out of 5.'})
         } else {
-            Movie.findOne({ title: req.body.title }, function (err, review) {
+            Movie.findOne({ title: req.body.title }, function (err, movie) {
                 var review = new Review();
                 review.title = req.body.title;
                 review.nameReview = req.body.nameReview;
                 review.quote = req.body.quote;
                 review.rating = req.body.rating;
 
-                review.save(function (err, reviews) {
-                    res.json({success: true, msg: 'Successfully reviewed movie.', review: req.body.quote, rating: req.body.rating })
-                });
+                res.json({movie: movie, review: req.body.quote, rating: req.body.rating })
+
             })
         }
     });
