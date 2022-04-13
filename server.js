@@ -277,7 +277,7 @@ router.route('/reviews')
                     if (err) {
                         res.json(err)
                     } else {
-                        review.save(function(err) {
+                        movie.save(function(err) {
                             if (err) {
                                 res.json(err);
                             }
