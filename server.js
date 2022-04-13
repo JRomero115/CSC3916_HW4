@@ -265,7 +265,12 @@ router.route('/reviews')
                 review.quote = req.body.quote;
                 review.rating = req.body.rating;
 
-                res.json({movie: movie, review: req.body.quote, rating: req.body.rating })
+                movie.save(function(err) {
+                    if (err) {
+                        res.json(err);
+                    }
+                    res.json({movie: movie, review: req.body.quote, rating: req.body.rating })
+                });
 
             })
         }
