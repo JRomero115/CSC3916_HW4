@@ -128,12 +128,35 @@ router.patch('/signin', function (req, res) {
 // Movies
 router.route('/movies')
     .get(function(req, res) {
-        Movie.find(function(err, movie) {
-            if (err) {
-                res.json({msg: 'Movies not found.'})
-            }
-            res.json(movie);
-        });
+        if (req.query.reviews == "true") {
+            Movie.find(function (err, movie) {
+                if (err) {
+                    res.json({success: false, msg: 'Error finding movies.'})
+                } else {
+                    Movie.aggregate([
+                        {$match :
+                                { title: req.body.title }},
+                        {$lookup:
+                                { from: "reviews", localField: "title", foreignField: "title", as: "review" }},
+                        {$addFields:
+                                { rating: "$review.rating" }}
+                    ]).exec(function(err, movie) {
+                        if (err) {
+                            res.json(err)
+                        } else {
+                            res.json(movie)
+                        }
+                    })
+                }
+            })
+        } else {
+            Movie.find(function (err, movie) {
+                if (err) {
+                    res.json({msg: 'Movies not found.'})
+                }
+                res.json(movie);
+            });
+        }
     })
 
     .post(function(req, res) {
@@ -198,7 +221,7 @@ router.patch('/movies', function (req, res) {
 router.route('/reviews')
     .get(function (req, res) {
         if(!req.body.title) {
-            res.json({success: false, msg: 'Error getting movie.'})
+            res.json({success: false, msg: 'Error getting movies.'})
         } else if (req.query.reviews == "true") {
             Movie.findOne({ title: req.body.title }, function (err, movie) {
                 if (err) {
@@ -210,7 +233,7 @@ router.route('/reviews')
                         {$lookup:
                                 { from: "reviews", localField: "title", foreignField: "title", as: "review" }},
                         {$addFields:
-                                { averageRate: {$avg: "$review.rating" }}}
+                                { rating: "$review.rating" }}
                     ]).exec(function(err, movie) {
                         if (err) {
                             return res.json(err)
@@ -241,22 +264,29 @@ router.route('/reviews')
             review.quote = req.body.quote;
             review.rating = req.body.rating;
 
-            Movie.findOne({ title: req.body.title }, function (err, reviews) {
-                if (err) {
-                    res.json({success: false, msg: 'Error finding movie review.'})
-                } else {
-                    Movie.aggregate([
-                        {$push :
-                                { review: req.body.quote, averageRate: req.body.rating }}
-                    ]).exec(function(err, movie) {
-                        if (err) {
-                            res.json(err)
-                        } else {
-                            res.json({success: true, msg: 'Successfully reviewed movie.'})
-                        }
-                    })
-                }
-            })
+            if (req.query.reviews == "true") {
+                Movie.findOne({title: req.body.title}, function (err, movie) {
+                    if (err) {
+                        res.json({success: false, msg: 'Error finding movie review.'})
+                    } else {
+                        Movie.aggregate([
+                            {$match:
+                                    {title: req.body.title}},
+                            {$lookup:
+                                    {from: "reviews", localField: "title", foreignField: "title", as: "review"}},
+                            {$addFields:
+                                    {review: req.body.quote, rating: req.body.rating }}
+                        ]).exec(function (err, movie) {
+                            if (err) {
+                                return res.json(err)
+                            } else {
+                                return res.json(movie)
+                            }
+                        })
+                    }
+                })
+
+            }
         }
     });
 
