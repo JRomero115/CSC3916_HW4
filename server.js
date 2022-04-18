@@ -127,7 +127,7 @@ router.patch('/signin', function (req, res) {
 
 // Movies
 router.route('/movies')
-    .get(function(req, res) {
+    .get(authJwtController.isAuthenticated, function(req, res) {
         if (req.query.reviews == "true") {
             Movie.find(function (err, movie) {
                 if (err) {
@@ -139,7 +139,10 @@ router.route('/movies')
                         {$lookup:
                                 { from: "reviews", localField: "title", foreignField: "title", as: "review" }},
                         {$addFields:
-                                { review: req.body.quote, rating: req.body.rating }}
+                                { review: req.body.quote, averageRate: { $avg: "$reviews.rating" } }},
+                        {$sort:
+                                { averageRate: -1 }
+                        }
                     ]).exec(function(err, movie) {
                         if (err) {
                             res.json(err)
@@ -159,7 +162,7 @@ router.route('/movies')
         }
     })
 
-    .post(function(req, res) {
+    .post(authJwtController.isAuthenticated, function(req, res) {
         if (!req.body.title || !req.body.year || !req.body.actors) {
             res.json({success: false, msg: 'Please include a title, year, and at least (1) actor/character name.'})
         } else {
@@ -185,7 +188,7 @@ router.route('/movies')
         }
     })
 
-    .put(function(req, res) {
+    .put(authJwtController.isAuthenticated, function(req, res) {
         if (!req.body.title) {
             res.json({success: false, msg: 'Please update the movie by entering the title.'})
         } else {
@@ -199,7 +202,7 @@ router.route('/movies')
         }
     })
 
-    .delete(function(req, res) {
+    .delete(authJwtController.isAuthenticated, function(req, res) {
         if (!req.body.title) {
             res.json({success: false, msg: 'Please delete the movie by entering the title.'})
         } else {
@@ -219,7 +222,7 @@ router.patch('/movies', function (req, res) {
 
 // Reviews
 router.route('/reviews')
-    .get(function (req, res) {
+    .get(authJwtController.isAuthenticated, function (req, res) {
         if(!req.body.title) {
             res.json({success: false, msg: 'Error getting movies.'})
         } else if (req.query.reviews == "true") {
@@ -254,7 +257,7 @@ router.route('/reviews')
         }
     })
 
-    .post(function(req, res) {
+    .post(authJwtController.isAuthenticated, function(req, res) {
         if (!req.body.title || !req.body.nameReview || !req.body.quote || !req.body.rating) {
             res.json({success: false, msg: 'Please include the movie title, your username, review, and a rating out of 5.'})
         } else {
