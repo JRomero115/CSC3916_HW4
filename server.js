@@ -125,6 +125,7 @@ router.patch('/signin', function (req, res) {
     res.status(401).send({success: false, msg: 'Does not support the HTTP method.'});
 });
 
+/*
 // Movies
 router.route('/movies')
     .get(authJwtController.isAuthenticated, function(req, res) {
@@ -289,7 +290,9 @@ router.route('/reviews')
         }
     });
 
-/*
+
+ */
+
 // Movies
 router.route('/movies')
     .get(function(req, res) {
@@ -451,8 +454,6 @@ router.route('/reviews')
             })
         }
     });
-
-*/
 
 app.use('/', router);
 app.listen(process.env.PORT || 8080);
